@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Amazon Lex V2 Integration</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.1125.0/aws-sdk.min.js"></script>
+</head>
+<body >
+    <div id="chat-container" style= "margin-top:50px;">
+        <div id="chat-messages"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
+    </div>
+
+    <script>
+        // Initialize AWS SDK
+        AWS.config.update({
+            credentials: new AWS.Credentials('AKIA5V75EVXIHEBPLMOK', 'Z5yw/LdpYAe5GeeE03YeNRCOWpw7a+GL+YygmN6J'),
+            region: 'us-east-1' // Change to your desired region
+        });
+
+        // Initialize LexRuntimeV2 client
+        const lexRuntimeV2 = new AWS.LexRuntimeV2();
+
+        // Handle user input and bot responses
+        document.getElementById('send-button').addEventListener('click', async () => {
+            const userInput = document.getElementById('user-input').value;
+            document.getElementById('chat-messages').innerHTML += `<div>User: ${userInput}</div>`;
+
+            const params = {
+                botId: 'LTEL7DDRIQ',
+                botAliasId: 'TSTALIASID',
+                localeId: 'en_US',
+                sessionId: 'unique-session-id',
+                text: userInput
+            };
+
+            try {
+                const response = await lexRuntimeV2.recognizeText(params).promise();
+                const botResponse = response.messages[0].content;
+                document.getElementById('chat-messages').innerHTML += `<div>Bot: ${botResponse}
+                </div>`;
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+</html>
